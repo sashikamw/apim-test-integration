@@ -47,6 +47,7 @@ database_config = {}
 product_host = None
 product_port = None
 product_ip = None
+test_mode = None
 
 def read_proprty_files():
     global git_repo_url
@@ -57,6 +58,7 @@ def read_proprty_files():
     global product_host
     global product_port
     global product_ip
+    global test_mode
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -80,6 +82,8 @@ def read_proprty_files():
                         product_id = git_repo_url.split("/")[-1].split('.')[0]
                     elif key == "PRODUCT_GIT_BRANCH":
                         git_branch = val.strip()
+                    elif key == "TEST_MODE":
+                        test_mode = val.strip()
                     elif key == "PRODUCT_HOST":
                         product_host = val.strip()
                     elif key == "PRODUCT_PORT":
@@ -104,6 +108,8 @@ def validate_property_readings():
         missing_values += " -PRODUCT_PORT- "
     if product_ip is None:
         missing_values += " -PRODUCT_IP- "
+    if test_mode is None:
+        missing_values += " -TEST_MODE- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -329,6 +335,18 @@ def main():
                 "and the format")
         # clone the repository
         clone_repo()
+
+        if test_mode == "DEBUG":
+            testng_source = Path(workspace + "/" + "testng.xml")
+            testng_destination = Path(workspace + "/" + product_id + "/" +
+                                      'modules/integration/tests-integration/tests-backend/src/test/resources/testng.xml')
+            testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
+            testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" +
+                                                 'modules/integration/tests-integration/tests-backend/src/test/resources/testng-server-mgt.xml')
+            # replace testng source
+            replace_file(testng_source, testng_destination)
+            # replace testng server mgt source
+            replace_file(testng_server_mgt_source, testng_server_mgt_destination)
       
         host_mapping(product_host, product_ip)
         cert_path = Path(workspace + "/" + product_id + "/" +
