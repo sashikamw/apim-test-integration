@@ -108,8 +108,6 @@ def validate_property_readings():
         missing_values += " -PRODUCT_PORT- "
     if product_ip is None:
         missing_values += " -PRODUCT_IP- "
-    if test_mode is None:
-        missing_values += " -TEST_MODE- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -297,7 +295,7 @@ def build_module_param(module_path, mvn_param):
     """Build a given module for platform tests.
     """
     logger.info('Start building a module. Module: ' + str(module_path))
-        subprocess.call(['mvn', 'clean', 'install', '-B',
+    subprocess.call(['mvn', 'clean', 'install', '-B',
                          '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn', mvn_param],
                         cwd=module_path)
     logger.info('Platform module build is completed. Module: ' + str(module_path))
