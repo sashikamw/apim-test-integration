@@ -275,6 +275,7 @@ def setPlatformTestHostConfig(file) :
                                 "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : product_host,
                                 "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : product_host,
                                 "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : product_host,
+				"xs:instance[@name='backend-server']/xs:hosts/xs:host/text()" : product_host,
                                 "xs:instance/xs:ports/xs:port[@type='http']/text()" : "80",
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : "443",
                                 "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8780",
