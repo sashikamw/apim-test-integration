@@ -48,6 +48,7 @@ product_host = None
 product_port = None
 product_ip = None
 test_mode = None
+offset = None
 
 def read_proprty_files():
     global git_repo_url
@@ -59,6 +60,7 @@ def read_proprty_files():
     global product_port
     global product_ip
     global test_mode
+    global offset
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -90,6 +92,9 @@ def read_proprty_files():
                         product_port = val.strip()
                     elif key == "PRODUCT_IP":
                         product_ip = val.strip()
+                    elif key == "Offset":
+                        offset = int(val.strip())
+
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
 
@@ -261,6 +266,9 @@ def replace_file(source, destination):
     logger.info('replacing files from:' + str(source) + "to: " + str(destination))
     shutil.move(source, destination)
 
+def port_with_offset(port,offset):
+    return port + offset
+
 def setPlatformTestHostConfig(file) :
     datafile=str(file)
     xmlparse = XSET.parse(datafile)
@@ -276,10 +284,15 @@ def setPlatformTestHostConfig(file) :
                                 "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : product_host,
                                 "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : product_host,
 				"xs:instance[@name='backend-server']/xs:hosts/xs:host/text()" : product_host,
+                                "xs:instance[@name='backend-server']/xs:hosts/xs:host/text()" : "localhost",
                                 "xs:instance/xs:ports/xs:port[@type='http']/text()" : "80",
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : "443",
-                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8780",
-                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : "8743"
+                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : str(port_with_offset(8280,offset)),
+                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : str(port_with_offset(8243,offset)),
+                                "xs:instance[@name='backend-server']/xs:ports/xs:port[@type='http']/text()" : str(port_with_offset(9763,offset)),
+                                "xs:instance[@name='backend-server']/xs:ports/xs:port[@type='https']/text()" : str(port_with_offset(9443,offset))
+
+                                
                                 }
 
     keysArray = PLATFORM_TEST_HOST_CONFIG.keys()
